@@ -1,0 +1,3 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=274
+
+Generates vim highlighting groups for typedefs, classes, and structs that you have defined in your C++ header files.  There are a few options that you can set to control its behavior, so read the included help file so you can know what options you can change in your .vimrc if you want.
