@@ -40,13 +40,13 @@
 "	the script.
 "
 "	Options:
-"	udt_recursive 
+"	g:udt_recursive 
 "		If g:recursive is not defined then it defaults to 0.
 "		Valid setting are:	
 "			0 = do not recurse directories looking for header files
 "			1 = recurse directories
 "	
-"	udt_tofile
+"	g:udt_tofile
 "		If this is defined then the output will be written to a file which can
 "		be sourced at a later time.  This is good for working on projects with
 "		several developers.	
@@ -55,7 +55,7 @@
 "		The value of this var is unimportant, just define it or don't.  Setting
 "		it to 50, 4000, or "foobar" makes no difference.	
 "
-"	udt_outputfile
+"	g:udt_outputfile
 "		This contains the name of the file to which output will be written.
 "		It defaults to "csyn_exp.vim".
 "
@@ -87,36 +87,36 @@
 
 "Set up some defaults, but first make sure that they have not aleady been
 "defined
-if !exists("udt_recursive")
-	let udt_recursive=0
+if !exists("g:udt_recursive")
+	let g:udt_recursive=0
 endif
 
-if !exists("udt_tofile")
+if !exists("g:udt_tofile")
 endif
 
-if !exists("udt_outputfile")
-	let udt_outputfile="udt.vim"
+if !exists("g:udt_outputfile")
+	let g:udt_outputfile="udt.vim"
 end
 
 "The attributes must be valid options to vim's ":hi" command.  See 
 ":he highlight-args (or for those with an aversion to typing ":he E416") 
 "for details, and they must be seperated by whitepsace
-if !exists("udt_typedef_atts")
-	let udt_typedef_atts="guifg=white gui=bold"
+if !exists("g:udt_typedef_atts")
+	let g:udt_typedef_atts="guifg=white gui=bold"
 end
 
-if !exists("udt_struct_atts")
-	let udt_struct_atts="guifg=white gui=bold"
+if !exists("g:udt_struct_atts")
+	let g:udt_struct_atts="guifg=white gui=bold"
 end
 
-if !exists("udt_class_atts")
-	let udt_class_atts="guifg=white gui=bold"
+if !exists("g:udt_class_atts")
+	let g:udt_class_atts="guifg=white gui=bold"
 end
 
 "This is not implemented yet	{{{
-"Note setting this option unsets udt_tofile.  This option will only
+"Note setting this option unsets g:udt_tofile.  This option will only
 "work when not outputting the highlighting info to a file.
-if exists("udt_dynamic_load")
+if exists("g:udt_dynamic_load")
 	"Not implemented yet
 end
 "}}}
@@ -149,14 +149,14 @@ end
 #{{{
 def vim_main
 
-	if vim_defined?("udt_recursive") and get_vim_var_val("udt_recursive") == 1
+	if vim_defined?("g:udt_recursive") and get_vim_var_val("g:udt_recursive") == 1
 		files = Dir["**/*.h"]
 	else
 		files = Dir["*.h"]
 	end
 
-	if vim_defined? "udt_tofile"
-		filename = get_vim_var_val('udt_outputfile')
+	if vim_defined? "g:udt_tofile"
+		filename = get_vim_var_val('g:udt_outputfile')
 		f = File.open(filename, File::CREAT|File::TRUNC|File::WRONLY)
 		out = f.method('write')
 	else
@@ -178,9 +178,9 @@ def vim_main
 
 	if anything_to_write
 		atts = {
-			"typedef" => get_vim_var_val("udt_typedef_atts"),
-			"class" => get_vim_var_val("udt_class_atts"),
-			"struct" => get_vim_var_val("udt_struct_atts")
+			"typedef" => get_vim_var_val("g:udt_typedef_atts"),
+			"class" => get_vim_var_val("g:udt_class_atts"),
+			"struct" => get_vim_var_val("g:udt_struct_atts")
 		}
 		writer.write_syn { |str|
 			 out.call str

@@ -74,7 +74,7 @@ Options:
 The following options can all be set in your |vimrc|.
 
 			*udt_recurse* *udt_recursive*
-udt_recursive		number (default 0)
+g:udt_recursive		number (default 0)
 					{not in vi}
 
 	If udt_recursive is not defined then it defaults to 0.	This option
@@ -85,7 +85,7 @@ udt_recursive		number (default 0)
 		1 = recurse sub-directories 
 
 			*udt_tofile*
-udt_tofile			{not in vi}
+g:udt_tofile			{not in vi}
 
 	If this is defined then the output will be written to a file which
 	can be sourced at a later time.  This is good for working on projects
@@ -96,7 +96,7 @@ udt_tofile			{not in vi}
 	define it.  Setting it to 50, 4000, or "foobar" makes no difference.
 
 			*udt_file* *udt_outputfile*
-udt_outputfile		string (default "udt.vim")
+g:udt_outputfile		string (default "udt.vim")
 					{not in vi}
 
 	This contains the name of the file to which output will be written,
@@ -104,16 +104,16 @@ udt_outputfile		string (default "udt.vim")
 
 							*udt_colors*
 			*udt_typedef_atts* *udt_struct_atts* *udt_class_atts*
-udt_typedef_atts	string (default "guifg=white ctermfg=white gui=bold")
-udt_struct_atts		{not in vi}
-udt_class_atts
+g:udt_typedef_atts	string (default "guifg=white ctermfg=white gui=bold")
+g:udt_struct_atts		{not in vi}
+g:udt_class_atts
 	
 	Each of these controls how typedefs, structs, and classes are
 	highlighted.  They must be valid params to |highlight|, see
 	|highlight-args| for the details.
 
 			*udt_dynamic_load*
-udt_dynamic_load
+g:udt_dynamic_load
 	
 	This is not implemented at the moment, but it is being worked on.
 

@@ -6,8 +6,6 @@ if ENV['SE_CORE']
 end
 
 #requires
-$: << '/home/michael/dev/ruby/vimtools/'
-
 require 'se_core'
 require 'getoptlong'
 

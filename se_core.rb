@@ -10,7 +10,6 @@ $def_colors = {
 	"class" => "guifg=white gui=bold",
 	"struct" => "guifg=white gui=bold"
 }
-arr = [:foo, :bar]
 
 #{{{
 class Array
