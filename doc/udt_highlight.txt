@@ -1,6 +1,6 @@
 *udt_highlight.txt*  Highlight user defined types
 
-For instructions on installing this file, type :help add-local-help inside Vim.
+For instructions on installing this file, see |add-local-help|.
 
 For Vim version 6.1. Last change 26 April 2002 
 
@@ -33,21 +33,23 @@ udt_highlight.vim creates vim syntax highlighting groups for typedefs,
 structs, and classes that are found in C++ header files.  It creates three
 syntax highlighting groups, one each for typedefs, structs, and classes,
 so if you want you can highlight those seperately.  I ran the command line
-version of this script on /usr/include, it generated a large highlighting.
-That highlighting file is included with this plugin.
+version of this script on /usr/include on my old Mandrake distribution,
+and it generated a _large_ highlighting file.  That highlighting file is included
+with this plugin.
 
 ================================================================================
 							*udt_install*
 Installation:
 
-You need to download the tar file from vim.sf.net, and untar the file in your
-~/.vim/ directory.  Then you need to do one of two things, either copy the
-file se_core.rb to /usr/lib/ruby/site_ruby/1.6/ directory, or add the path
-to se_core.rb to the $SE_CORE environment variable.  This is also distributed
-with a command line version.  You should udt.rb to whereever you put scripts
-on your system.  To see the documentation that you are reading you have to
-add "udt_highlight.txt" to ~/.vim/doc and run |helptags|.  For more info
-see |add-local-help|
+You need to download the udt_highlight.tar file from vim.sf.net, and untar
+it in your ~/.vim/ directory.  Then you need to do one of three things,
+either copy the file se_core.rb to /usr/lib/ruby/site_ruby/1.6/ directory,
+put the path to se_core.rb to the $SE_CORE environment variable, or do nothing.
+Of those options, the first is far and away the best.  This is also distributed
+with a command line interface, udt.rb.  You will find udt.rb in ~/.vim/.
+You should put it whereever you put scripts on your system, ie. ~/bin.
+To see the documentation that you are reading you have to run |helptags|.
+For more info for adding this doc, see |add-local-help|.
 
 File list:
 
@@ -58,8 +60,9 @@ doc/udt_highlight.txt
 after/syntax/cpp/usr_include.vim
 
 NOTE:  Do _NOT_ forget to either move se_core.rb to
-/usr/lib/ruby/site_ruby/1.6/ (recommended), or add the path to se_core.rb in
-the environment variable $SE_CORE.
+/usr/lib/ruby/site_ruby/1.6/, or add the path to se_core.rb in the environment
+variable $SE_CORE.  (Yes, i know you can do nothing and it will work too,
+but that is not recommended.)
 
 ================================================================================
 							*udt_config*
@@ -121,29 +124,39 @@ g:udt_dynamic_load
 							*udt_usage*
 Usage:
 
-This script is distributed with both vim filetype plugins and a command
-line version.  For the command line version you can see the options that
-it accepts by typing "udt --help" or "udt -h".  For the vim ftplugins,
+This script is distributed with both vim ftplugin and command
+line interfaces.  For the command line interface you can see the options that
+it accepts by typing "udt --help" or "udt -h".  For the vim ftplugin interface,
 you should read this help doc.  :)
 
-For the command version there isn't much else to say about using it.
+For the command line version there isn't much else to say about using it.
 Just use it.  Well it does default to outputting to stdout.  The options are
 similar to the options above, |udt_config_options|.  With the exception that
 it does not support configuration of the colors, |udt_colors|.
 
 For the vim version, you will have to call Generate_Highlighting(), in
 order to get the udt highlighting.  Other than that, this whole document is
-about how to configure the vim version. :)  Though I have a few suggestions,
-make an iabbr to call Generate_Highlighting(), or make an easy to type keymap.
+about how to configure the vim version. :)  Though I have a few suggestions
+on how to call Generate_Highlighting().  You could make an iabbr to call
+Generate_Highlighting(), make an easy to type keymap, or maybe better yet
+put an sutocommand in you vimrc to call Generate_Highlighting() when the
+event |bufreadpost|.  This is how I do it:
+
+" au bufreadpost *.cpp,*.c,*.h call Generate_Highlighting()
+
+So you can use it on C too, but I am far less familiar with C than C++.
+One thing you will notice is that 'struct xxxx { ... }' will create
+highlighting for "xxxx", which is incorrect for C, it should highlight
+'struct xxxx'.  That is a minor thing though.
 
 ================================================================================
 							*udt_todo*
 Todo:
 
-Feel free to email me and suggest some more improvements.  I have already
+Feel free to email me <brailsmt@yahoo.com> and suggest some more improvements.  I have already
 included two suggestions from people that took the time to request them.
-I welcome feedback.  Well, these are the current things on the todo, in no
-particular order.
+I welcome feedback.  Well, these are the current things on the todo list, in no
+particular order:
 
 	* Add some default keymaps.
 	* Provide a mechanism to load all files generated with udt.vim from

@@ -10,10 +10,8 @@
 "
 "	Description:
 "	This creates vim syntax highlighting groups for all typedefs, structs, and classes that are found
-"	in C++ header files.  It creates 3 three groups, one each for typedefs, structs, and classes,
-"	so if you want you can highlight those seperately.  Being that it is a beta it is not perfect.
-"	Especially since I do not know all the C++ syntax for structs, typedefs nad classes.  But the
-"	most common cases are taken care of.
+"	in C++ header files.  It creates three groups, one each for typedefs, structs, and classes,
+"	so if you want you can highlight those seperately.
 "	
 "	It has been tested on the following:
 "	typedef deque<Move *> history;
@@ -26,18 +24,16 @@
 "	} 
 "
 "	In which tests 'history', 'Move', 'ltpos', and 'Piece' were properly highlighted.
-"	Base_class was not, since it should be defined in another header somewhere. 
+"	Base_class was not, since it should be defined in another header somewhere.
 "
 "	I also ran it on /usr/include, it generated a syntax file that was 7000
-"	lines long.  So I am sure that it works. :)	
+"	lines long.  That file that it generated is located in
+"	~/.vim/after/syntax/cpp/usr_include.vim.  BTW, when I ran this script on
+"	/usr/include I was using a machine that had Mandrake on it.  So it may be
+"	bloated, by way of association.  :)
 "
 "	Usage:
-"	This file is self-contained.  You simply need to source it in you .vimrc
-"	file, and then call the Generate_Highlighting() function like this 
-"	":call Generate_Highlighting()".  If you want you can make it into a
-"	keymapping, abbrev, or whatever you think will make it easier to run.
-"	There are various options that can be set which will alter the behaviour of
-"	the script.
+"	Read the help that comes with this plugin. ":he udt"
 "
 "	Options:
 "	g:udt_recursive 
@@ -57,15 +53,16 @@
 "
 "	g:udt_outputfile
 "		This contains the name of the file to which output will be written.
-"		It defaults to "csyn_exp.vim".
+"		If you set the g:udt_tofile option, but do *not* set this option then
+"		udt_highlight will default to writing the highlighting to "udt.vim".
 "
 "	Notes:
 "	This comes with a command-line version.  It has similar options,
-"	"csyntax_expander.rb --help" for details.
+"	"udt.rb --help" for details.
 "
-"	This was tested and created with my colorscheme, so you may or may not
+"	This plugin was created tested and with my colorscheme, so you may or may not
 "	like the colors that are the defaults.  One of the items on the todo list
-"	is add vars to determine the color of the highlighting.  But that will
+"	is to add vars to determine the color of the highlighting.  But that will
 "	have to wait until v1.0.  Until then you can get my colorscheme at
 "	vimonline.  Its midnight.vim.  I guess you can also redefine the colors
 "	using ":hi", too.
@@ -125,10 +122,13 @@ end
 function! Generate_Highlighting()
 "{{{
 ruby << END
-if ENV['SE_CORE']
-	$: << ENV['SE_CORE']
-end
-#$: << "/home/michael/dev/ruby/vimtools/"
+
+# Add paths to possible locations for se_core.rb.  This is more robust than
+# the previous set up.  It will work 'out-of-box', without requiring the user
+# to set env vars.  The prefered method is still to set the env var.
+$: << "#{ENV['HOME']}/.vim" if FileTest.exist? "#{ENV['HOME']}/.vim/se_core.rb"
+$: << ENV['SE_CORE'] if ENV['SE_CORE']
+
 
 require 'se_core'
 
@@ -165,15 +165,9 @@ def vim_main
 	
 	parser = FindKeywords.new
 	writer = Highlighter.new
-#	anything_to_write = false
 	anything_to_write = true
-#	visited = Array.new
 	files.each { |arg|
-#		if not visited.member? arg
-#			visited << arg
-			parser.parse arg
-#			anything_to_write = true
-#		end
+		parser.parse arg
 	}
 
 	if anything_to_write

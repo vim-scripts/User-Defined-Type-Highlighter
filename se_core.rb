@@ -93,7 +93,6 @@ class Highlighter
 
 	def write_hi(hsh=$def_colors)
 		yield ''
-		p "printing"
 		yield "hi cppUserTypedefs #{hsh['typedef']}"
 		yield "hi cppUserStructs #{hsh['struct']}"
 		yield "hi cppUserClasses #{hsh['class']}"
@@ -128,9 +127,9 @@ class FindKeywords
 							parse_typedef line
 						end
 					when @@class
-						@keeper.add_struct $1
-					when @@struct
 						@keeper.add_class $1
+					when @@struct
+						@keeper.add_struct $1
 					when in_struct
 						#p line
 						in_struct = line =~ /}(.*);/
