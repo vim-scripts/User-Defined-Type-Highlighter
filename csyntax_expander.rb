@@ -4,12 +4,15 @@
 require 'singleton'
 require 'getoptlong.rb'
 
+$typedef_group = 'cppUserTypedefs'
+$struct_group = 'cppUserStructs'
+$class_group = 'cppUserClasses'
+
 #{{{
 class Keywords
 	include Singleton
 
 	attr_reader :typdefs, :structs, :classes
-	#private :typdefs, :structs, :classes
 
 	def initialize
 		@typdefs = Array.new
@@ -26,9 +29,21 @@ class Keywords
 	end
 
 	def add_class(word)
-		#p "add_class"
 		@classes << word
 	end
+
+	def typedefs?
+		@typdefs.empty?
+	end
+
+	def structs?
+		@structs.empty?
+	end
+
+	def classes?
+		@classes.empty?
+	end
+
 
 end
 #}}}
@@ -42,23 +57,29 @@ class Highlighter
 
 	def write_syn
 		#print "to file"
-		td = @keeper.typdefs
-		td.uniq!
-		td.each { |word|
-			@syn_file.puts "syn keyword cppUserTypedefs #{word}"
-		}
+		if not @keeper.typedefs?
+			td = @keeper.typdefs
+			td.uniq!
+			td.each { |word|
+				@syn_file.puts "syn keyword #{$typedef_group} #{word}"
+			}
+		end
 
-		st = @keeper.structs
-		st.uniq!
-		st.each { |word|
-			@syn_file.puts "syn keyword cppUserStructs #{word}"
-		}
+		if not @keeper.structs?
+			st = @keeper.structs
+			st.uniq!
+			st.each { |word|
+				@syn_file.puts "syn keyword #{$struct_group} #{word}"
+			}
+		end
 
-		cl = @keeper.classes
-		cl.uniq!
-		cl.each { |word|
-			@syn_file.puts "syn keyword cppUserClasses #{word}"
-		}
+		if not @keeper.classes?
+			cl = @keeper.classes
+			cl.uniq!
+			cl.each { |word|
+				@syn_file.puts "syn keyword #{$class_group} #{word}"
+			}
+		end
 	end
 
 	def write_hi
@@ -83,6 +104,7 @@ class FindKeywords
 	end
 
 	def parse(fname)
+		p "parsing"
 		File.open(fname, File::RDONLY) { |file|
 			file.each { |line|
 				case line

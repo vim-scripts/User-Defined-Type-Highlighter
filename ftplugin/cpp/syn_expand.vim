@@ -96,6 +96,11 @@ end
 function! Generate_Highlighting()
 "{{{
 ruby << END
+require 'singleton'
+
+$typedef_group = 'cppUserTypedefs'
+$struct_group = 'cppUserStructs'
+$class_group = 'cppUserClasses'
 
 #{{{
 class Keywords
@@ -121,6 +126,19 @@ class Keywords
 		@classes << word
 	end
 
+	def typedefs?
+		@typdefs.empty?
+	end
+
+	def structs?
+		@structs.empty?
+	end
+
+	def classes?
+		@classes.empty?
+	end
+
+
 end
 #}}}
 #{{{
@@ -132,24 +150,30 @@ class Highlighter
 	end
 
 	def write_syn
-		print "to file"
-		td = @keeper.typdefs
-		td.uniq!
-		td.each { |word|
-			@syn_file.puts "syn keyword cppUserTypedefs #{word}"
-		}
+		#print "to file"
+		if not @keeper.typedefs?
+			td = @keeper.typdefs
+			td.uniq!
+			td.each { |word|
+				@syn_file.puts "syn keyword #{$typedef_group} #{word}"
+			}
+		end
 
-		st = @keeper.structs
-		st.uniq!
-		st.each { |word|
-			@syn_file.puts "syn keyword cppUserStructs #{word}"
-		}
+		if not @keeper.structs?
+			st = @keeper.structs
+			st.uniq!
+			st.each { |word|
+				@syn_file.puts "syn keyword #{$struct_group} #{word}"
+			}
+		end
 
-		cl = @keeper.classes
-		cl.uniq!
-		cl.each { |word|
-			@syn_file.puts "syn keyword cppUserClasses #{word}"
-		}
+		if not @keeper.classes?
+			cl = @keeper.classes
+			cl.uniq!
+			cl.each { |word|
+				@syn_file.puts "syn keyword #{$class_group} #{word}"
+			}
+		end
 	end
 
 	def write_hi
@@ -162,23 +186,29 @@ class Highlighter
 
 	def write_syn_vim
 	#print "vim"
-		td = @keeper.typdefs
-		td.uniq!
-		td.each { |word|
-			VIM.command "syn keyword cppUserTypedefs #{word}"
-		}
+		if not @keeper.typedefs?
+			td = @keeper.typdefs
+			td.uniq!
+			td.each { |word|
+				VIM.command "syn keyword #{$typedef_group} #{word}"
+			}
+		end
 
-		st = @keeper.structs
-		st.uniq!
-		st.each { |word|
-			VIM.command "syn keyword cppUserStructs #{word}"
-		}
+		if not @keeper.structs?
+			st = @keeper.structs
+			st.uniq!
+			st.each { |word|
+				VIM.command "syn keyword #{$struct_group} #{word}"
+			}
+		end
 
-		cl = @keeper.classes
-		cl.uniq!
-		cl.each { |word|
-			VIM.command "syn keyword cppUserClasses #{word}"
-		}
+		if not @keeper.classes?
+			cl = @keeper.classes
+			cl.uniq!
+			cl.each { |word|
+				VIM.command "syn keyword #{$class_group} #{word}"
+			}
+		end
 	end
 
 	def write_hi_vim
