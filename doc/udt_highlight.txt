@@ -1,0 +1,165 @@
+*udt_highlight.txt*  Highlight user defined types
+
+For instructions on installing this file, type :help add-local-help inside Vim.
+
+For Vim version 6.1. Last change 26 April 2002 
+
+			VIM REFERENCE	by Michael Brailsford
+
+This plugin requires the |Ruby| interface.  Check the output of |:version|
+for |+ruby|, if you see it then you are good to go, otherwise you will need
+to get a new vim package, or recompile with the --enable-rubyinterp option.
+
+*udt* *udt_highlight.vim*
+
+	1. Description			|udt_description|
+	1. Installation			|udt_install|
+	2. Configuration		|udt_config|
+		a. Config options	|udt_config_options|
+	3. Usage			|udt_usage|
+	4. Todo				|udt_todo|
+	5. Bug reports			|udt_bugs|
+
+The script described here is a filetype plugin, see |add-filetype-plugin|.
+This plugin is only available if 'compatible' is not set.
+
+{Vi has none of this}
+
+================================================================================
+							*udt_description*
+Description: 
+
+udt_highlight.vim creates vim syntax highlighting groups for typedefs,
+structs, and classes that are found in C++ header files.  It creates three
+syntax highlighting groups, one each for typedefs, structs, and classes,
+so if you want you can highlight those seperately.  I ran the command line
+version of this script on /usr/include, it generated a large highlighting.
+That highlighting file is included with this plugin.
+
+================================================================================
+							*udt_install*
+Installation:
+
+You need to download the tar file from vim.sf.net, and untar the file in your
+~/.vim/ directory.  Then you need to do one of two things, either copy the
+file se_core.rb to /usr/lib/ruby/site_ruby/1.6/ directory, or add the path
+to se_core.rb to the $SE_CORE environment variable.  This is also distributed
+with a command line version.  You should udt.rb to whereever you put scripts
+on your system.  To see the documentation that you are reading you have to
+add "udt_highlight.txt" to ~/.vim/doc and run |helptags|.  For more info
+see |add-local-help|
+
+File list:
+
+se_core.rb
+udt.rb
+ftplugin/cpp/udt.vim
+doc/udt_highlight.txt
+after/syntax/cpp/usr_include.vim
+
+NOTE:  Do _NOT_ forget to either move se_core.rb to
+/usr/lib/ruby/site_ruby/1.6/ (recommended), or add the path to se_core.rb in
+the environment variable $SE_CORE.
+
+================================================================================
+							*udt_config*
+Configuration:
+
+There are several options that can be set in your |vimrc| which will control
+the way that this plugin works, and its output.  These all need to be set with |let|.
+
+							*udt_config_options*
+Options:
+
+The following options can all be set in your |vimrc|.
+
+			*udt_recurse* *udt_recursive*
+udt_recursive		number (default 0)
+					{not in vi}
+
+	If udt_recursive is not defined then it defaults to 0.	This option
+	controls whether the script will search subdirectories looking for
+	header files.
+	Valid setting are:	
+		0 = do not recurse sub-directories
+		1 = recurse sub-directories 
+
+			*udt_tofile*
+udt_tofile			{not in vi}
+
+	If this is defined then the output will be written to a file which
+	can be sourced at a later time.  This is good for working on projects
+	with several developers.
+	If it is not defined then the syntax highlighting groups will be
+	set through vim commands when Generate_Highlighting() is called.
+	The value of this var is unimportant, just define it or don't
+	define it.  Setting it to 50, 4000, or "foobar" makes no difference.
+
+			*udt_file* *udt_outputfile*
+udt_outputfile		string (default "udt.vim")
+					{not in vi}
+
+	This contains the name of the file to which output will be written,
+	relative to the current directory.
+
+							*udt_colors*
+			*udt_typedef_atts* *udt_struct_atts* *udt_class_atts*
+udt_typedef_atts	string (default "guifg=white ctermfg=white gui=bold")
+udt_struct_atts		{not in vi}
+udt_class_atts
+	
+	Each of these controls how typedefs, structs, and classes are
+	highlighted.  They must be valid params to |highlight|, see
+	|highlight-args| for the details.
+
+			*udt_dynamic_load*
+udt_dynamic_load
+	
+	This is not implemented at the moment, but it is being worked on.
+
+================================================================================
+							*udt_usage*
+Usage:
+
+This script is distributed with both vim filetype plugins and a command
+line version.  For the command line version you can see the options that
+it accepts by typing "udt --help" or "udt -h".  For the vim ftplugins,
+you should read this help doc.  :)
+
+For the command version there isn't much else to say about using it.
+Just use it.  Well it does default to outputting to stdout.  The options are
+similar to the options above, |udt_config_options|.  With the exception that
+it does not support configuration of the colors, |udt_colors|.
+
+For the vim version, you will have to call Generate_Highlighting(), in
+order to get the udt highlighting.  Other than that, this whole document is
+about how to configure the vim version. :)  Though I have a few suggestions,
+make an iabbr to call Generate_Highlighting(), or make an easy to type keymap.
+
+================================================================================
+							*udt_todo*
+Todo:
+
+Feel free to email me and suggest some more improvements.  I have already
+included two suggestions from people that took the time to request them.
+I welcome feedback.  Well, these are the current things on the todo, in no
+particular order.
+
+	* Add some default keymaps.
+	* Provide a mechanism to load all files generated with udt.vim from
+	  the current directory towards the root of the filesystem, like with tags.
+	* Provide support for other languages... (maybe...) 
+	* Add support for enums, enum members, and unions	
+	* Add support for dynamic loading from "#include" lines in header file,
+	  and associated header file for a .cpp file	
+
+================================================================================
+							*udt_bugs*
+Bugs:
+
+I am sure that there are many.  If you find one (not that you'll need to
+look real hard) send me a description of it and ways to reproduce it to
+brailsmt@yahoo.com.  I will fix them as I get time.
+
+================================================================================
+ vim:ts=8:sw=2:

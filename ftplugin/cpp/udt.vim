@@ -24,9 +24,12 @@
 "	class Piece : public Base_class {
 "			...
 "	} 
-"	
+"
 "	In which tests 'history', 'Move', 'ltpos', and 'Piece' were properly highlighted.
 "	Base_class was not, since it should be defined in another header somewhere. 
+"
+"	I also ran it on /usr/include, it generated a syntax file that was 7000
+"	lines long.  So I am sure that it works. :)	
 "
 "	Usage:
 "	This file is self-contained.  You simply need to source it in you .vimrc
@@ -37,13 +40,13 @@
 "	the script.
 "
 "	Options:
-"	g:syn_expand_recursive 
+"	udt_recursive 
 "		If g:recursive is not defined then it defaults to 0.
 "		Valid setting are:	
 "			0 = do not recurse directories looking for header files
 "			1 = recurse directories
 "	
-"	g:syn_expand_tofile
+"	udt_tofile
 "		If this is defined then the output will be written to a file which can
 "		be sourced at a later time.  This is good for working on projects with
 "		several developers.	
@@ -52,7 +55,7 @@
 "		The value of this var is unimportant, just define it or don't.  Setting
 "		it to 50, 4000, or "foobar" makes no difference.	
 "
-"	g:syn_expand_outputfile
+"	udt_outputfile
 "		This contains the name of the file to which output will be written.
 "		It defaults to "csyn_exp.vim".
 "
@@ -78,205 +81,115 @@
 "	* Provide a mechanism to load all files generated with syn_expand.vim from
 "	  the current directory towards the root of the filesystem, like with tags.
 "	* Provide support for other languages... (maybe...) 
+"	* Add support for enums, enum members, and unions	
+"	* Add support for dynamic loading from "#include" lines in header file,
+"	  and associated header file for a .cpp file	
 
 "Set up some defaults, but first make sure that they have not aleady been
 "defined
-if !exists("g:syn_expand_recursive")
-	let g:syn_expand_recursive = 0
+if !exists("udt_recursive")
+	let udt_recursive=0
 endif
 
-if !exists("g:syn_expand_tofile")
+if !exists("udt_tofile")
 endif
 
-if !exists("g:syn_expand_outputfile")
-	let g:syn_expand_outputfile = "csyn_exp.vim"
+if !exists("udt_outputfile")
+	let udt_outputfile="udt.vim"
 end
+
+"The attributes must be valid options to vim's ":hi" command.  See 
+":he highlight-args (or for those with an aversion to typing ":he E416") 
+"for details, and they must be seperated by whitepsace
+if !exists("udt_typedef_atts")
+	let udt_typedef_atts="guifg=white gui=bold"
+end
+
+if !exists("udt_struct_atts")
+	let udt_struct_atts="guifg=white gui=bold"
+end
+
+if !exists("udt_class_atts")
+	let udt_class_atts="guifg=white gui=bold"
+end
+
+"This is not implemented yet	{{{
+"Note setting this option unsets udt_tofile.  This option will only
+"work when not outputting the highlighting info to a file.
+if exists("udt_dynamic_load")
+	"Not implemented yet
+end
+"}}}
 
 "This is the whole enchilada.
 function! Generate_Highlighting()
 "{{{
 ruby << END
-require 'singleton'
+if ENV['SE_CORE']
+	$: << ENV['SE_CORE']
+end
+#$: << "/home/michael/dev/ruby/vimtools/"
+
+require 'se_core'
 
 $typedef_group = 'cppUserTypedefs'
 $struct_group = 'cppUserStructs'
 $class_group = 'cppUserClasses'
 
 #{{{
-class Keywords
-	include Singleton
-
-	attr_reader :typdefs, :structs, :classes
-
-	def initialize
-		@typdefs = Array.new
-		@structs = Array.new
-		@classes = Array.new
-	end
-
-	def add_typedef(word)
-		@typdefs << word
-	end
-
-	def add_struct(word)
-		@structs << word
-	end
-
-	def add_class(word)
-		@classes << word
-	end
-
-	def typedefs?
-		@typdefs.empty?
-	end
-
-	def structs?
-		@structs.empty?
-	end
-
-	def classes?
-		@classes.empty?
-	end
-
-
+def vim_defined?(var_name)
+	VIM.evaluate("exists('#{var_name}')").to_i == 1
 end
 #}}}
 #{{{
-class Highlighter
-
-	def initialize(file)
-		@syn_file = file
-		@keeper = Keywords.instance
-	end
-
-	def write_syn
-		#print "to file"
-		if not @keeper.typedefs?
-			td = @keeper.typdefs
-			td.uniq!
-			td.each { |word|
-				@syn_file.puts "syn keyword #{$typedef_group} #{word}"
-			}
-		end
-
-		if not @keeper.structs?
-			st = @keeper.structs
-			st.uniq!
-			st.each { |word|
-				@syn_file.puts "syn keyword #{$struct_group} #{word}"
-			}
-		end
-
-		if not @keeper.classes?
-			cl = @keeper.classes
-			cl.uniq!
-			cl.each { |word|
-				@syn_file.puts "syn keyword #{$class_group} #{word}"
-			}
-		end
-	end
-
-	def write_hi
-		@syn_file.puts
-		@syn_file.puts
-		@syn_file.puts "hi cppUserTypedefs guifg=white"
-		@syn_file.puts "hi cppUserStructs guifg=white"
-		@syn_file.puts "hi cppUserClasses guifg=white"
-	end
-
-	def write_syn_vim
-	#print "vim"
-		if not @keeper.typedefs?
-			td = @keeper.typdefs
-			td.uniq!
-			td.each { |word|
-				VIM.command "syn keyword #{$typedef_group} #{word}"
-			}
-		end
-
-		if not @keeper.structs?
-			st = @keeper.structs
-			st.uniq!
-			st.each { |word|
-				VIM.command "syn keyword #{$struct_group} #{word}"
-			}
-		end
-
-		if not @keeper.classes?
-			cl = @keeper.classes
-			cl.uniq!
-			cl.each { |word|
-				VIM.command "syn keyword #{$class_group} #{word}"
-			}
-		end
-	end
-
-	def write_hi_vim
-		VIM.command "hi cppUserTypedefs guifg=white"
-		VIM.command "hi cppUserStructs guifg=white"
-		VIM.command "hi cppUserClasses guifg=white"
-	end
-
+def get_vim_var_val(var_name)
+	VIM.evaluate("#{var_name}")
 end
 #}}}
-#{{{
-class FindKeywords
-
-	@@typedef = /^typedef\s*(.*?)\s+(\w*).*/
-	@@class = /^class\s*(\w*)\s*.*/
-	@@struct = /^struct\s*(\w*)\s*.*/
-
-	def initialize
-		@keeper = Keywords.instance
-	end
-
-	def parse(fname)
-		File.open(fname, File::RDONLY) { |file|
-			file.each { |line|
-				case line
-					when @@typedef
-						@keeper.add_typedef $2
-					when @@class
-						@keeper.add_struct $1
-					when @@struct
-						@keeper.add_class $1
-				end
-			}
-		}
-	end
-
-end
-#}}}
-
 #{{{
 def vim_main
-	files = Dir["*.h"]
-	out = $stdout
 
-	recurse = VIM.evaluate('exists("g:syn_expand_recursive")').to_i
-	if recurse == 1
+	if vim_defined?("udt_recursive") and get_vim_var_val("udt_recursive") == 1
 		files = Dir["**/*.h"]
+	else
+		files = Dir["*.h"]
 	end
 
-	tofile = VIM.evaluate('exists("g:syn_expand_tofile")').to_i
-	if tofile == 1 
-		print tofile
-		filename = VIM.evaluate('g:syn_expand_outputfile')
-		out = File.open(filename, File::CREAT|File::TRUNC|File::WRONLY)
+	if vim_defined? "udt_tofile"
+		filename = get_vim_var_val('udt_outputfile')
+		f = File.open(filename, File::CREAT|File::TRUNC|File::WRONLY)
+		out = f.method('write')
+	else
+		out = VIM.method('command')
 	end
 	
 	parser = FindKeywords.new
-	writer = Highlighter.new out
+	writer = Highlighter.new
+#	anything_to_write = false
+	anything_to_write = true
+#	visited = Array.new
 	files.each { |arg|
-		parser.parse arg
+#		if not visited.member? arg
+#			visited << arg
+			parser.parse arg
+#			anything_to_write = true
+#		end
 	}
 
-	if tofile == 1
-		writer.write_syn
-		writer.write_hi
+	if anything_to_write
+		atts = {
+			"typedef" => get_vim_var_val("udt_typedef_atts"),
+			"class" => get_vim_var_val("udt_class_atts"),
+			"struct" => get_vim_var_val("udt_struct_atts")
+		}
+		writer.write_syn { |str|
+			 out.call str
+		}
+		writer.write_hi(atts) { |str|
+			 out.call str
+		}
 	else
-		writer.write_syn_vim
-		writer.write_hi_vim
+		print 'Nothing to do'
 	end
 end
 #}}}
